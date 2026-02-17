@@ -1,0 +1,52 @@
+package com.mapfinder.controller;
+
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.json.JSONObject;
+
+import com.mapfinder.services.UserManager;
+import com.mapfinder.utils.JSONUtil;
+import com.mapfinder.utils.SessionUtil;
+import com.mapfinder.utils.ValidationUtil;
+
+public class SignUpServlet extends HttpServlet {
+	
+	private static final long serialVersionUID = 1L;
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.sendRedirect("signup.html");
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		JSONObject json=JSONUtil.readAsJSON(request);
+		String username=json.optString("username");
+		String password=json.optString("password");
+		if(ValidationUtil.isNotEmpty(username)) {
+			if(UserManager.isUserNameExist(username)) {
+				response.getWriter().write("duplicate");
+				return;
+			}
+			if(ValidationUtil.isNotEmpty(password)&&ValidationUtil.isValidPassword(password)) {
+				if(UserManager.addUser(username, password)) {
+					HttpSession session=request.getSession(); 
+					session.setAttribute("user", username);
+					response.getWriter().write("success");
+					return;
+				}
+				else {
+					response.getWriter().write("failed");
+					return;
+				}
+			}
+		}
+		response.getWriter().write("failed");
+	}
+
+}

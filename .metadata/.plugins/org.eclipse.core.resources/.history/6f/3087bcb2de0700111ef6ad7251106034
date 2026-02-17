@@ -1,0 +1,11 @@
+package com.mapfinder.utils;
+
+import java.net.http.HttpRequest;
+
+import org.json.JSONObject;
+
+public class JSONUtil {
+	public static JSONObject readAsJSON(HttpRequest request) {
+		return null;
+	}
+}

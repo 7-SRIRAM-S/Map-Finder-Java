@@ -1,0 +1,40 @@
+package com.mapfinder.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import com.mapfinder.modal.User;
+import com.mapfinder.utils.DBConnection;
+
+import  com.mapfinder.utils.Queries;
+
+public class UserDAOImpl implements UserDAO{
+
+	public static Connection con=DBConnection.getInstance().getConnection();
+	
+	public boolean insertUser(User user) {
+		try  {
+			PreparedStatement ps=con.prepareStatement(Queries.insertUser);
+			ps.setString(1, user.getUsername());
+			ps.setString(2, user.getPassword());
+			return ps.executeUpdate()>0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public  boolean updateUser(User user) {
+		return false;
+	}
+
+	public  boolean removeUser(User user) {
+		return false;
+	}
+
+	public  User getUser(int userId) {
+		return null;
+	}
+
+}

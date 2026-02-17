@@ -1,0 +1,7 @@
+package com.mapfinder.utils;
+
+public class QueryUtil {
+	public static final String CHECK_USERNAME = "SELECT * FROM USERS WHERE USERNAME=?";
+	public static String INSERT_USER="INSERT INTO USERS VALUES(?,?)";
+	public static String VIEW_USER="SELECT * FROM USERS WHERE USERNAME=? AND PASSWORD=?";
+}

@@ -1,0 +1,25 @@
+package com.mapfinder.services;
+
+import com.mapfinder.dao.UserDAOImpl;
+import com.mapfinder.modal.User;
+
+public class UserManager {
+	public static UserDAOImpl userDAO=new UserDAOImpl();
+	public static boolean addUser(String username,String password) {
+		User user=null;
+		try {
+			 user=new User(username,password);
+			 if(!userDAO.insertUser(user)) {
+				 return false;
+			 }
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return user!=null;
+	}
+	public static boolean isValidUser(String username, String password) {
+		return false;
+	}
+}

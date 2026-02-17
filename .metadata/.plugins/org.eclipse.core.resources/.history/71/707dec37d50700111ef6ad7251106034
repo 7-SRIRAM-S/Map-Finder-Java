@@ -1,0 +1,5 @@
+package com.mapfinder.services;
+
+public class UserManager {
+
+}

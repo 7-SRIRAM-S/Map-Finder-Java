@@ -1,0 +1,5 @@
+package com.mapfinder.utils;
+
+public class QueryUtil {
+	public static String insertUser="INSERT INTO USERS VALUES(?,?)";
+}

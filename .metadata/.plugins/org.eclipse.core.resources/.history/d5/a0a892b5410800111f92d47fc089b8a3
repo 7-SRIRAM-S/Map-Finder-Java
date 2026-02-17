@@ -1,0 +1,31 @@
+package com.mapfinder.controller;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.mapfinder.utils.SessionUtil;
+
+
+public class HomeServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		System.out.println("checking the login user");
+	    if(SessionUtil.hasSession(request)) {
+	    	System.out.println("yes valid user");
+	    	response.sendRedirect("/index.html");
+	    }
+	    else {
+	    	System.out.println("not a user");
+	    	response.sendRedirect("/login.html");
+	    }
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+	}
+
+}

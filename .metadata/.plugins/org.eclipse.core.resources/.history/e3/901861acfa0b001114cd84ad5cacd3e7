@@ -1,0 +1,36 @@
+package com.mapfinder.services;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.mapfinder.controller.SignUpServlet;
+import com.mapfinder.dao.UserDAOImpl;
+import com.mapfinder.modal.User;
+
+public class UserManager {
+	private static UserDAOImpl userDAO=new UserDAOImpl();
+    private static final Logger LOGGER=LogManager.getLogger(SignUpServlet.class.getName());
+
+	public static boolean addUser(String username,String password) {
+		User user=null;
+		try {
+			 user=new User(username,password);
+			 if(!userDAO.insertUser(user)) {
+				 return false;
+			 }
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return user!=null;
+	}
+	
+	public static boolean isValidUser(String username, String password) {
+		return userDAO.isUserExist(username,password);
+	}
+	
+	public static boolean isUserNameExist(String username) {
+		return userDAO.isUserNameExist(username);
+	}
+}

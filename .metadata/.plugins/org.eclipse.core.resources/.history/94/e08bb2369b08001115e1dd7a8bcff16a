@@ -1,0 +1,63 @@
+package com.mapfinder.controller;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONObject;
+
+import com.mapfinder.services.UserManager;
+import com.mapfinder.utils.JSONUtil;
+import com.mapfinder.utils.SessionUtil;
+import com.mapfinder.utils.ValidationUtil;
+
+public class SignInServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		System.out.println("working inside sign in");
+		String action=request.getParameter("action");
+		if(ValidationUtil.isNotEmpty(action)&&action.equalsIgnoreCase("session")) {
+			System.out.println("working inside sign in for session check");
+			if(SessionUtil.hasSession(request)) {
+				response.getWriter().write("success");
+				return;
+			}
+			else {
+				response.getWriter().write("failed");
+				return;
+			}
+		}
+		else {
+			System.out.println("working navigation check session");
+			if(SessionUtil.hasSession(request)) {
+				System.out.println("user in session");
+				request.getRequestDispatcher("/index.html").forward(request, response);
+				return;
+			}
+			else {
+				System.out.println("failed");
+				response.getWriter().write("failed");
+				return;
+			}
+		}
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		JSONObject json=JSONUtil.readAsJSON(request);
+		String username=json.optString("username");
+		String password=json.optString("password");
+		if(ValidationUtil.isNotEmpty(username)&&ValidationUtil.isNotEmpty(password)&&ValidationUtil.isValidPassword(password)) {
+			if(UserManager.isValidUser(username, password)) {
+				SessionUtil.setSession(request, username);
+				response.getWriter().write("success");
+			}
+			else {
+				response.getWriter().write("failed");
+			}
+		}
+	}
+
+}

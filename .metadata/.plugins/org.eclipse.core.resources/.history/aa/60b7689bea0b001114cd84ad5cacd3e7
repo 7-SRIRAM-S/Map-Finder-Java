@@ -1,0 +1,16 @@
+status = error
+name = MapFinderConfig
+
+appenders = file
+
+appender.file.type = File
+appender.file.name = MyFile
+appender.file.fileName = logs/map-finder-application.log
+appender.file.layout.type = PatternLayout
+appender.file.layout.pattern = %d [%c{1}] userId=%X{userId} %level %msg%n
+
+loggers = root
+
+rootLogger.level = trace
+rootLogger.appenderRefs = file
+rootLogger.appenderRef.file.ref = MyFile

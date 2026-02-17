@@ -1,0 +1,24 @@
+package com.mapfinder.utils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+public class SessionUtil {
+	
+	public static void setSession(HttpServletRequest request,String username) {
+		HttpSession session=request.getSession(); // non static
+		session.setAttribute("user", username);
+	}
+	
+	public static boolean hasSession(HttpServletRequest request) {
+		HttpSession session=request.getSession(false);
+		return session!=null&&session.getAttribute("user")!=null;
+	}
+
+	public static void clearSession(HttpServletRequest request) {
+		HttpSession session=request.getSession(false);
+		if(session!=null) {
+			session.invalidate();
+		}
+	}
+}

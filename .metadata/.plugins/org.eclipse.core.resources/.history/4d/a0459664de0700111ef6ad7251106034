@@ -1,0 +1,5 @@
+package com.mapfinder.utils;
+
+public class JSONUtil {
+
+}

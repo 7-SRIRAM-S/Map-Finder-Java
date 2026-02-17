@@ -1,0 +1,64 @@
+package com.mapfinder.controller;
+
+import java.io.IOException;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONObject;
+
+import com.mapfinder.services.UserManager;
+import com.mapfinder.utils.JSONUtil;
+import com.mapfinder.utils.SessionUtil;
+import com.mapfinder.utils.ValidationUtil;
+
+public class SignInServlet extends HttpServlet {
+	
+	private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER=LogManager.getLogger(SignInServlet.class.getName());
+    
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		LOGGER.log(Level.TRACE, "Going to check log in in get method for session");
+	    String action = request.getParameter("action");
+	    if ("session".equalsIgnoreCase(action)) {
+	        if (SessionUtil.hasSession(request)) {
+	            response.getWriter().write("success"); 
+	        } else {
+	            response.getWriter().write("failed"); 
+	        }
+	    } else {
+
+	        if (SessionUtil.hasSession(request)) {
+	            request.getRequestDispatcher("/index.html").forward(request, response);
+	        } else {
+	            request.getRequestDispatcher("/login.html").forward(request, response); 
+	        }
+	    }
+	}
+
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		JSONObject json=JSONUtil.readAsJSON(request);
+		String username=json.optString("username");
+		String password=json.optString("password");
+		if(ValidationUtil.isNotEmpty(username)&&ValidationUtil.isNotEmpty(password)&&ValidationUtil.isValidPassword(password)) {
+			if(UserManager.isValidUser(username, password)) {
+				SessionUtil.setSession(request, username);
+				response.getWriter().write("success");
+				return;
+			}
+			else {
+				response.getWriter().write("failed");
+			}
+		}
+		response.getWriter().write("failed");
+	}
+
+}

@@ -1,0 +1,14 @@
+package com.mapfinder.services;
+
+public class UserManager {
+	public static boolean addUser(String username,String password) {
+		try {
+			User user=new User(username,password);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+}

@@ -1,0 +1,45 @@
+package com.mapfinder.controller;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONObject;
+
+import com.mapfinder.services.UserManager;
+import com.mapfinder.utils.InputValidator;
+
+public class SignUpServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	
+		response.getWriter().write("working get");
+	
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		StringBuilder sb=new StringBuilder();
+		BufferedReader reader=request.getReader();
+		String line=null;
+		while((line=reader.readLine())!=null) {
+			sb.append(line);
+		}
+		System.out.println(sb.toString());
+		JSONObject json=new JSONObject(sb.toString());
+		String username=json.optString("username");
+		String password=json.optString("password");
+		if(InputValidator.isNotEmpty(username)&&InputValidator.isNotEmpty(password)) {
+			UserManager.addUser(username, password);
+			response.getWriter().write("success");
+		}
+		else {
+			response.getWriter().write("failed");
+		}
+		response.getWriter().write("working post");
+	}
+
+}
