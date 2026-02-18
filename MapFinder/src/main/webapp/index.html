@@ -105,6 +105,9 @@
     
     function blockBackNavigation(){
     	history.pushState(null, null, location.href);
+    	 window.onpopstate = function () {
+    	        history.go(1);
+    	 };
     }
     	
    window.onload=async function(){
@@ -116,12 +119,17 @@
    }
 
     window.addEventListener("popstate", async (event) => {
+    	console.log("clicking back button");
     	let session= await isSessionExist();
     	if(session){
-    		change("signin");
+        	console.log("session is alive");
+
+    		blockBackNavigation();
     	}
     	else{
-    		blockBackNavigation();
+        	console.log("no session going to signin");
+
+    		change("signin");
     	}
     });
 

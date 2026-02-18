@@ -99,7 +99,7 @@
             border-radius: 12px;
             border-color: 1px solid orange;
             cursor: pointer;
-            transition: 0.6s backgroud-color ease;
+    		transition: background-color 0.3s ease;
         }
         button:hover{
             background-color: green;
@@ -111,7 +111,12 @@
             gap: 1rem;
         }
         #error-info{
+            text-align:center;
+        	height:5px;
         	color:red;
+        }
+        .register-navigation{
+        	text-align:center;
         }
     </style>
 </head>
@@ -141,10 +146,10 @@
            <input type="password" id="password" name="password" placeholder="Enter your password"  required>
         </div>
         <div class="wrap">
-        	<p id="error-info" style="display:none"></p>
+        	<p id="error-info" style="visibility:hidden"></p>
         </div>
         <button type="submit" style="border:none;">Access Account</button>
-        <div class="wrap">
+        <div class="wrap register-navigation">
         	<p>Does not have account ? <a href="/MapFinder/signup.html">Register Now</a></p>
         </div>
     </form>
@@ -155,50 +160,73 @@
 </body>
 <script>
 
-document.addEventListener("visibilitychange", function() {
-    if (isSessionExist()) {
-    	console.log("going to home page");
-    	change("home");
-    }
-    else{
-    	blockBackNavigation();
-    }     
-});
 
-
-function isSessionExist(){
-    	fetch("/MapFinder/checksession").then((res)=>res.text()).then((msg)=>{
-			if(msg==="failed"){
-				localStorage.clear();
-				console.log("session not exist");
-				return false;
-			}
-			
-			change("home");
-			
-			return true;
-    	});
-}
-
-function change(uri){
-	console.log("calling change uri");
-	window.location.replace(uri);
-}
-
-function blockBackNavigation(){
-	history.pushState(null, null, location.href);
-}
+	document.addEventListener("visibilitychange", async function ()  {
+	    if (!document.hidden) {
+	    	let session=await isSessionExist();
+	    	if(session){
+	    		change("home")
+	    	}
+	    	else{
+	    		blockBackNavigation();
+	    	}
+	    }
+	});
 	
-
-
-window.addEventListener("popstate", (event) => {
-	if(!(isSessionExist())){
-		change("signin");
+	async function isSessionExist(){
+	    try{
+	        let res=await fetch("/MapFinder/checksession");
+	        let msg=await res.text();
+	
+	        if(msg==="failed"){
+	            localStorage.clear();
+	            console.log("session not exist");
+	            return false;
+	        }
+	
+	        console.log("session exist");
+	        return true;
+	
+	    } catch(err){
+	        console.log(err);
+	        return false;
+	    }
 	}
-	else{
-		blockBackNavigation();
+	
+	
+	function change(uri){
+		window.location.replace(uri);
 	}
-});
+	
+	function blockBackNavigation(){
+		history.pushState(null, null, location.href);
+		 window.onpopstate = function () {
+		        history.go(1);
+		 };
+	}
+		
+	window.onload=async function(){
+	   let session=await isSessionExist();
+	   if(session){
+		   change("home");
+	   }
+	   blockBackNavigation();
+	}
+	
+	window.addEventListener("popstate", async (event) => {
+		console.log("clicking back button");
+		let session= await isSessionExist();
+		if(!session){
+	    	console.log("session is alive");
+	
+			blockBackNavigation();
+		}
+		else{
+	    	console.log("no session going to signin");
+	
+			change("home");
+		}
+	});
 
 
 
@@ -217,12 +245,12 @@ window.addEventListener("popstate", (event) => {
            	}).then(res=>res.text()).then((msg)=>{
            		if(msg==="failed"){
            			const error=document.querySelector("#error-info");
-           			error.style.display="block";
+           			error.style.visibility="visible";
            			error.innerText="invalid username or password";
            		}
            		else{
            	        localStorage.setItem("sessionChecked", "true");
-           			window.location.href="home";
+           			change("home");
            		}
            	})
         });

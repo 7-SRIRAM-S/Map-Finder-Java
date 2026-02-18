@@ -113,17 +113,6 @@
         	color:red;
         }
     </style>
-    <script>
-	    window.onload = function() {
-	    	if (localStorage.getItem("sessionChecked")) {
-	    		console.log("session exist");
-	            return; 
-	        }
-	    	else{
-	    		history.pushState(null,null,window.location.href);
-	    	}
-	    };
-    </Script>
 </head>
 <body>
     <header>
@@ -168,33 +157,72 @@
   </footer>
 </body>
 <script>
+	document.addEventListener("visibilitychange", async function ()  {
+	    if (!document.hidden) {
+	    	let session=await isSessionExist();
+	    	if(session){
+	    		change("home")
+	    	}
+	    	else{
+	    		blockBackNavigation();
+	    	}
+	    }
+	});
+	
+	async function isSessionExist(){
+	    try{
+	        let res=await fetch("/MapFinder/checksession");
+	        let msg=await res.text();
+	
+	        if(msg==="failed"){
+	            localStorage.clear();
+	            console.log("session not exist");
+	            return false;
+	        }
+	
+	        console.log("session exist");
+	        return true;
+	
+	    } catch(err){
+	        console.log(err); 
 
-history.pushState(null, null, window.location.href);
-
-
-document.addEventListener("visibilitychange", function() {
-    if (!document.hidden) {
-        let status = localStorage.getItem("sessionChecked");
-        if (status) {
-    		window.location.replace("home");
-        }
-        else{
-        	history.pushState(null, null, window.location.href);
-        }
-        
-    }
-});
-
-
-window.addEventListener("popstate", (event) => {
-	if(localStorage.getItem("sessionChecked")){
-		window.location.replace("home");
+	        return false;
+	    }
 	}
-	else{
-		history.pushState(null, null, window.location.href);
+	
+	
+	function change(uri){
+		window.location.replace(uri);
 	}
-});
-
+	
+	function blockBackNavigation(){
+		history.pushState(null, null, location.href);
+		 window.onpopstate = function () {
+		        history.go(1);
+		 };
+	}
+		
+	window.onload=async function(){
+	   let session=await isSessionExist();
+	   if(session){
+		   change("home");
+	   }
+	   blockBackNavigation();
+	}
+	
+	window.addEventListener("popstate", async (event) => {
+		console.log("clicking back button");
+		let session= await isSessionExist();
+		if(!session){
+	    	console.log("session is alive");
+			blockBackNavigation();
+		}
+		else{
+	    	console.log("no session going to signin");
+	
+			change("home");
+		}
+	});
 
     let form=document.getElementById("sign_in_form");
  	form.addEventListener('submit',(e)=>{
